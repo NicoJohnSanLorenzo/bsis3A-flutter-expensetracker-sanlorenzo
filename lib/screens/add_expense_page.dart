@@ -4,18 +4,33 @@ import '../models/expense.dart';
 import '../utils/navigation_utils.dart';
 
 class AddExpensePage extends StatefulWidget {
-  const AddExpensePage({super.key});
+  final Expense? existing;
+
+  const AddExpensePage({super.key, this.existing});
 
   @override
   State<AddExpensePage> createState() => _AddExpensePageState();
 }
 
 class _AddExpensePageState extends State<AddExpensePage> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
+  late final TextEditingController _titleController;
+  late final TextEditingController _amountController;
+
+  bool get _isEditing => widget.existing != null;
 
   String? _titleError;
   String? _amountError;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.existing?.title ?? '');
+    _amountController = TextEditingController(
+      text: widget.existing != null
+          ? widget.existing!.amount.toStringAsFixed(2)
+          : '',
+    );
+  }
 
   void _onSave() {
     final String title = _titleController.text.trim();
@@ -36,7 +51,11 @@ class _AddExpensePageState extends State<AddExpensePage> {
     // The line that pops (or displays) the expense in the Home Screen.
     popWithResult<Expense>(
       context,
-      Expense(title: title, amount: amount!),
+      Expense(
+        title: title,
+        amount: amount!,
+        createdAt: _isEditing ? widget.existing!.createdAt : DateTime.now(),
+      ),
     );
   }
 
@@ -51,7 +70,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Expense'),
+        title: Text(_isEditing ? 'Edit Expense' : 'Add Expense'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -91,8 +110,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: _onSave,
-              icon: const Icon(Icons.save),
-              label: const Text('Save'),
+              icon: Icon(_isEditing ? Icons.check : Icons.save),
+              label: Text(_isEditing ? 'Update' : 'Save'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),

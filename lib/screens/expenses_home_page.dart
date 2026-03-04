@@ -30,6 +30,20 @@ class _ExpensesHomePageState extends State<ExpensesHomePage> {
     }
   }
 
+  Future<void> _openEditExpensePage(int index) async {
+    final Expense? updated = await pushAndAwaitResult<Expense>(
+      context,
+      AddExpensePage(existing: _expenses[index]),
+    );
+
+    if (updated != null && mounted) {
+      setState(() {
+        _expenses[index] = updated;
+      });
+      showSnackBar(context, 'Updated: ${updated.title} — ₱${updated.amount.toStringAsFixed(2)}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -89,12 +103,23 @@ class _ExpensesHomePageState extends State<ExpensesHomePage> {
                         subtitle: Text(
                           '${expense.createdAt.day}/${expense.createdAt.month}/${expense.createdAt.year}',
                         ),
-                        trailing: Text(
-                          '₱${expense.amount.toStringAsFixed(2)}',
-                          style: textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.primary,
-                          ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '₱${expense.amount.toStringAsFixed(2)}',
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const Icon(Icons.edit_outlined),
+                              tooltip: 'Edit expense',
+                              onPressed: () => _openEditExpensePage(index),
+                            ),
+                          ],
                         ),
                       );
                     },
