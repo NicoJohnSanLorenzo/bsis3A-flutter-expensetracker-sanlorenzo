@@ -72,7 +72,12 @@ class _ExpensesHomePageState extends State<ExpensesHomePage> {
           Expanded(
             child: _expenses.isEmpty
                 ? const Center(
-                    child: Text('No expenses yet. Tap + to add one.'),
+                    child: Text('No expenses yet. Tap + to add one.', 
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w100,
+                      letterSpacing: -0.5,
+                    ),),
                   )
                 : ListView.builder(
                     itemCount: _expenses.length,
@@ -100,7 +105,7 @@ class _ExpensesHomePageState extends State<ExpensesHomePage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddExpensePage,
         icon: const Icon(Icons.add),
-        label: const Text('Add'),
+        label: const Text('Add Expenses'),
       ),
     );
   }
